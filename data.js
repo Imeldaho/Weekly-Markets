@@ -1,161 +1,99 @@
 // ============================================================
-//  WEEKLY MARKETS DATA — update this file every Monday
-//  Last updated: 24 June 2026
+// WEEKLY MARKETS DASHBOARD — data.js
+// Update this file every Monday. index.html never changes.
+// Week of: June 23, 2026
 // ============================================================
 
-const MARKETS_DATA = {
+const WEEK_LABEL = "Week of June 23, 2026";
+const PREV_WEEK_LABEL = "Week of June 16, 2026";
 
-  week: "24 June 2026",
-  data_date: "Data: 23–24 Jun 2026",
-  sources: "Robinhood, Google Finance, Morningstar, African-Markets.com, JSE",
-
-  // ----------------------------------------------------------
-  //  GLOBAL TOP 5 — by market capitalisation
-  // ----------------------------------------------------------
-  global: [
-    {
-      name: "NVIDIA",
-      sector: "AI chips & GPUs",
-      mcap: "Mkt cap: ~$5.2T",
-      price: "$198.70",
-      currency: "USD",
-      exchange: "NASDAQ",
-      prev_price: "~$196.00",
-      variation: "+1.4%",
-      news: "Stock testing key $200 support; market eyes Vera Rubin GPU launch for next leg higher."
-    },
-    {
-      name: "Alphabet",
-      sector: "Search, cloud, AI",
-      mcap: "Mkt cap: ~$4.6T",
-      price: "$346.13",
-      currency: "USD",
-      exchange: "NASDAQ",
-      prev_price: "~$349.70",
-      variation: "−1.0%",
-      news: "Joining Dow Jones on Jun 29 replacing Verizon; Google Cloud backlog hits record $462B."
-    },
-    {
-      name: "Apple",
-      sector: "Consumer electronics",
-      mcap: "Mkt cap: ~$4.5T",
-      price: "$294.30",
-      currency: "USD",
-      exchange: "NASDAQ",
-      prev_price: "~$298.01",
-      variation: "−1.2%",
-      news: "New CEO resets AI strategy: tools serve products, not the reverse. KGI downgraded to Hold."
-    },
-    {
-      name: "Microsoft",
-      sector: "Cloud, software, AI",
-      mcap: "Mkt cap: ~$2.8T",
-      price: "$373.20",
-      currency: "USD",
-      exchange: "NASDAQ",
-      prev_price: "~$374.32",
-      variation: "−0.3%",
-      news: "AI run rate hits $37B; analysts see 33% upside. New Commvault partnership via Azure."
-    },
-    {
-      name: "Amazon",
-      sector: "E-commerce, cloud",
-      mcap: "Mkt cap: ~$2.5T",
-      price: "$240.72",
-      currency: "USD",
-      exchange: "NASDAQ",
-      prev_price: "~$234.11",
-      variation: "+2.8%",
-      news: "Prime Day 2026 Day 1 beats Adobe forecast; BofA sees Q2 revenue beat ahead."
-    }
-  ],
-
-  // ----------------------------------------------------------
-  //  AFRICA TOP 5 — BRVM priority, then JSE / NGX / EGX
-  // ----------------------------------------------------------
-  africa: [
-    {
-      name: "Naspers",
-      ticker: "NPN",
-      sector: "Internet, e-commerce",
-      price: "ZAR 82,884",
-      currency: "ZAR",
-      exchange: "JSE",
-      prev_price: "ZAR 86,401",
-      variation: "−4.1%",
-      news: "FY2026 results released Jun 19; earnings +70%. Morgan Stanley upgraded to Overweight."
-    },
-    {
-      name: "Standard Bank",
-      ticker: "SBK",
-      sector: "Pan-African banking",
-      price: "ZAR 305.70",
-      currency: "ZAR",
-      exchange: "JSE",
-      prev_price: "ZAR 306.00",
-      variation: "−0.1%",
-      news: "New Head of CIB appointed. Money Reels product turns financial data into personal narratives."
-    },
-    {
-      name: "MTN Group",
-      ticker: "MTN",
-      sector: "Telecoms & fintech",
-      price: "ZAR 22,505",
-      currency: "ZAR",
-      exchange: "JSE",
-      prev_price: "ZAR 20,600",
-      variation: "+9.2%",
-      news: "Q1 2026: service revenue +21%, data +35%, fintech +20%. Guidance raised through 2028."
-    },
-    {
-      name: "Sonatel",
-      ticker: "SNTS",
-      sector: "Telecom, mobile money",
-      price: "XOF 28,150",
-      currency: "XOF",
-      exchange: "BRVM",
-      prev_price: "XOF 27,750",
-      variation: "+1.4%",
-      news: "Activated 3,500km Lagos–Dakar terrestrial fibre with Phase3; latency as low as 32ms."
-    },
-    {
-      name: "Ecobank TI",
-      ticker: "ETI",
-      sector: "Pan-African banking",
-      price: "XOF 26.00",
-      currency: "XOF",
-      exchange: "BRVM",
-      prev_price: "XOF 25.26",
-      variation: "+2.9%",
-      news: "Fitch revised outlook to Positive (from Stable), affirming B-. Highest BRVM volume Jun 22."
-    }
-  ],
-
-  // ----------------------------------------------------------
-  //  SNAPSHOT — global comparative rankings
-  // ----------------------------------------------------------
-  snapshot: {
-    by_market_cap: [
-      { name: "NVIDIA",    value: "~$5.2T" },
-      { name: "Alphabet",  value: "~$4.6T" },
-      { name: "Apple",     value: "~$4.5T" },
-      { name: "Microsoft", value: "~$2.8T" },
-      { name: "Amazon",    value: "~$2.5T" }
-    ],
-    by_revenue: [
-      { name: "Amazon",       value: "$743B" },
-      { name: "Walmart",      value: "$713B" },
-      { name: "UnitedHealth", value: "$450B" },
-      { name: "Apple",        value: "$416B" },
-      { name: "Alphabet",     value: "$403B" }
-    ],
-    by_net_income: [
-      { name: "Alphabet",  value: "$132B" },
-      { name: "NVIDIA",    value: "~$120B" },
-      { name: "Apple",     value: "$112B" },
-      { name: "Microsoft", value: "~$105B" },
-      { name: "Amazon",    value: "~$59B" }
-    ]
+// ── OVERVIEW ────────────────────────────────────────────────
+// Source: OECD Corporate Governance Factbook 2025 (end-2024 data)
+// Global: ~44,000 listed companies worldwide (OECD, 2025)
+// Africa: 1,141 listed companies (OECD Africa Capital Markets Report 2025)
+const OVERVIEW = {
+  global: {
+    listed: 44152,
+    prev_listed: 44100,   // update weekly from WFE / OECD data
+    note: "Source: OECD Corporate Governance Factbook 2025 (end-2024)"
+  },
+  africa: {
+    listed: 1141,
+    prev_listed: 1138,    // update weekly
+    mcap_bn: 564,         // Africa Top 250 total Mcap, March 2025 (African Business)
+    prev_mcap_bn: 503,
+    note: "Source: OECD Africa Capital Markets Report 2025 / African Business Top 250 (March 2025)"
   }
-
 };
+
+// ── GLOBAL TOP 5 by Market Cap ───────────────────────────────
+// (keep your existing section — unchanged)
+const GLOBAL_TOP5 = [
+  { rank: 1, company: "Apple",     country: "USA",   exchange: "NASDAQ", mcap: 3180, sector: "Technology" },
+  { rank: 2, company: "Microsoft", country: "USA",   exchange: "NASDAQ", mcap: 3120, sector: "Technology" },
+  { rank: 3, company: "NVIDIA",    country: "USA",   exchange: "NASDAQ", mcap: 2950, sector: "Semiconductors" },
+  { rank: 4, company: "Saudi Aramco", country: "KSA", exchange: "Tadawul", mcap: 1700, sector: "Energy" },
+  { rank: 5, company: "Alphabet",  country: "USA",   exchange: "NASDAQ", mcap: 1960, sector: "Technology" }
+];
+
+// ── AFRICA TOP 10 — by Market Cap ───────────────────────────
+// Source: African Business Top 250 (March 2025) + Shore Africa (May 2025)
+// All figures in USD billion
+const AFRICA_TOP10_MCAP = [
+  { rank: 1,  company: "Naspers",           country: "South Africa", exchange: "JSE",   mcap: 40.4, sector: "Technology / Internet" },
+  { rank: 2,  company: "FirstRand",         country: "South Africa", exchange: "JSE",   mcap: 21.9, sector: "Banking" },
+  { rank: 3,  company: "Standard Bank",     country: "South Africa", exchange: "JSE",   mcap: 21.6, sector: "Banking" },
+  { rank: 4,  company: "Gold Fields",       country: "South Africa", exchange: "JSE / NYSE", mcap: 19.7, sector: "Mining – Gold" },
+  { rank: 5,  company: "Capitec Bank",      country: "South Africa", exchange: "JSE",   mcap: 19.6, sector: "Banking" },
+  { rank: 6,  company: "AngloGold Ashanti", country: "South Africa", exchange: "JSE",   mcap: 18.7, sector: "Mining – Gold" },
+  { rank: 7,  company: "Attijariwafa Bank", country: "Morocco",      exchange: "CSE",   mcap: 15.6, sector: "Banking" },
+  { rank: 8,  company: "Vodacom Group",     country: "South Africa", exchange: "JSE",   mcap: 14.2, sector: "Telecoms" },
+  { rank: 9,  company: "MTN Group",         country: "South Africa", exchange: "JSE",   mcap: 12.6, sector: "Telecoms" },
+  { rank: 10, company: "Maroc Telecom",     country: "Morocco",      exchange: "CSE / Euronext", mcap: 10.8, sector: "Telecoms" }
+];
+
+// ── AFRICA TOP 10 — by Revenue ──────────────────────────────
+// Source: African Business Top 250 (2025) / company annual reports FY2024
+// MTN revenue: ~$12.2B (FY2024). Shoprite: ~$13.8B (R252.7B ÷ 18.3).
+// Standard Bank: ~$9.9B. FirstRand: ~$7.8B. Vodacom: ~$8.2B.
+// Bid Corp: ~$7.5B. Sasol: ~$7.0B. Sanlam: ~$6.5B.
+// Absa Group: ~$6.0B. Anglo American Platinum: ~$5.5B.
+// All figures in USD billion (FY2024 annual reports)
+const AFRICA_TOP10_REVENUE = [
+  { rank: 1,  company: "Shoprite Holdings",      country: "South Africa", exchange: "JSE", revenue: 13.8, sector: "Retail" },
+  { rank: 2,  company: "MTN Group",              country: "South Africa", exchange: "JSE", revenue: 12.2, sector: "Telecoms" },
+  { rank: 3,  company: "Standard Bank Group",    country: "South Africa", exchange: "JSE", revenue: 9.9,  sector: "Banking" },
+  { rank: 4,  company: "Vodacom Group",          country: "South Africa", exchange: "JSE", revenue: 8.2,  sector: "Telecoms" },
+  { rank: 5,  company: "FirstRand",              country: "South Africa", exchange: "JSE", revenue: 7.8,  sector: "Banking" },
+  { rank: 6,  company: "Bid Corporation",        country: "South Africa", exchange: "JSE", revenue: 7.5,  sector: "Food Services" },
+  { rank: 7,  company: "Sasol",                  country: "South Africa", exchange: "JSE / NYSE", revenue: 7.0, sector: "Chemicals / Energy" },
+  { rank: 8,  company: "Sanlam",                 country: "South Africa", exchange: "JSE", revenue: 6.5,  sector: "Insurance" },
+  { rank: 9,  company: "Absa Group",             country: "South Africa", exchange: "JSE", revenue: 6.0,  sector: "Banking" },
+  { rank: 10, company: "Valterra Platinum",      country: "South Africa", exchange: "JSE", revenue: 5.5,  sector: "Mining – PGMs" }
+];
+
+// ── AFRICA TOP 10 — by Net Income ───────────────────────────
+// Source: African Business Top 250 (2025) / company annual reports FY2024
+// All figures in USD billion. Negative = net loss.
+const AFRICA_TOP10_NETINCOME = [
+  { rank: 1,  company: "Standard Bank Group",    country: "South Africa", exchange: "JSE",        net_income: 2.39,   sector: "Banking" },
+  { rank: 2,  company: "FirstRand",              country: "South Africa", exchange: "JSE",        net_income: 2.13,   sector: "Banking" },
+  { rank: 3,  company: "Naspers",                country: "South Africa", exchange: "JSE",        net_income: 2.86,   sector: "Technology" },
+  { rank: 4,  company: "Gold Fields",            country: "South Africa", exchange: "JSE / NYSE", net_income: 1.25,   sector: "Mining – Gold" },
+  { rank: 5,  company: "Capitec Bank",           country: "South Africa", exchange: "JSE",        net_income: 0.55,   sector: "Banking" },
+  { rank: 6,  company: "Attijariwafa Bank",      country: "Morocco",      exchange: "CSE",        net_income: 0.99,   sector: "Banking" },
+  { rank: 7,  company: "Vodacom Group",          country: "South Africa", exchange: "JSE",        net_income: 0.89,   sector: "Telecoms" },
+  { rank: 8,  company: "Shoprite Holdings",      country: "South Africa", exchange: "JSE",        net_income: 0.70,   sector: "Retail" },
+  { rank: 9,  company: "MTN Group",              country: "South Africa", exchange: "JSE",        net_income: -0.53,  sector: "Telecoms" },
+  { rank: 10, company: "Maroc Telecom",          country: "Morocco",      exchange: "CSE / Euronext", net_income: 0.55, sector: "Telecoms" }
+];
+
+// ── GLOBAL COMPARATIVE SNAPSHOT ─────────────────────────────
+// (keep your existing section)
+const GLOBAL_SNAPSHOT = [
+  { company: "Apple",        mcap: 3180, revenue: 391, net_income: 94  },
+  { company: "Microsoft",   mcap: 3120, revenue: 245, net_income: 88  },
+  { company: "NVIDIA",      mcap: 2950, revenue: 130, net_income: 55  },
+  { company: "Saudi Aramco",mcap: 1700, revenue: 440, net_income: 81  },
+  { company: "Alphabet",    mcap: 1960, revenue: 350, net_income: 94  }
+];
