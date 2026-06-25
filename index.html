@@ -1,247 +1,496 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Weekly Markets">
-<title>Weekly Markets</title>
-<style>
-  :root {
-    --bg: #ffffff;
-    --bg2: #f5f5f2;
-    --bg3: #eeecea;
-    --border: rgba(0,0,0,0.11);
-    --border2: rgba(0,0,0,0.2);
-    --text: #1a1a18;
-    --text2: #6b6b67;
-    --text3: #9b9b97;
-    --pos: #1a7f4b;
-    --neg: #b91c1c;
-    --neu: #6b6b67;
-    --brvm-bg: #eaf3de;
-    --brvm-text: #3b6d11;
-    --accent: #1a1a18;
-    --radius: 12px;
-    --radius-sm: 7px;
-  }
-  @media (prefers-color-scheme: dark) {
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Markets Dashboard</title>
+  <script src="data.js"></script>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg: #1c1c1a;
-      --bg2: #242422;
-      --bg3: #2d2d2a;
-      --border: rgba(255,255,255,0.09);
-      --border2: rgba(255,255,255,0.18);
-      --text: #f0efed;
-      --text2: #a0a09c;
-      --text3: #6b6b67;
-      --brvm-bg: #17340a;
-      --brvm-text: #97c459;
-      --accent: #f0efed;
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --surface2:  #1c2330;
+      --border:    #30363d;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --accent:    #58a6ff;
+      --green:     #3fb950;
+      --red:       #f85149;
+      --gold:      #d29922;
+      --africa:    #f0883e;
+      --africa-dim:#7c4c24;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
     }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif; background: var(--bg2); color: var(--text); min-height: 100vh; }
-  .page { max-width: 820px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
 
-  /* HEADER */
-  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; gap: 12px; flex-wrap: wrap; }
-  .header h1 { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; }
-  .header p { font-size: 12px; color: var(--text3); margin-top: 4px; }
-  .week-pill { font-size: 11px; background: var(--bg3); border: 0.5px solid var(--border2); border-radius: 20px; padding: 5px 12px; color: var(--text2); white-space: nowrap; align-self: flex-start; margin-top: 2px; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
 
-  /* TABS */
-  .tab-bar { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.25rem; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .tab { padding: 9px 18px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2.5px solid transparent; color: var(--text3); margin-bottom: -1px; white-space: nowrap; transition: color 0.15s; user-select: none; }
-  .tab.active { color: var(--text); border-bottom-color: var(--accent); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
+    /* ── Header ──────────────────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--text);
+    }
+    header h1 span { color: var(--accent); }
+    #week-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
 
-  /* SECTION LABEL */
-  .slabel { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text3); margin-bottom: 0.85rem; }
+    /* ── Layout ──────────────────────────────────────────── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 
-  /* TABLE CARD */
-  .card { background: var(--bg); border-radius: var(--radius); border: 0.5px solid var(--border); overflow: hidden; margin-bottom: 1.5rem; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th { background: var(--bg2); padding: 7px 11px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); border-bottom: 0.5px solid var(--border); white-space: nowrap; }
-  tbody td { padding: 11px 11px; border-bottom: 0.5px solid var(--border); vertical-align: top; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: var(--bg2); }
+    /* ── Section headers ─────────────────────────────────── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 36px 0 14px;
+    }
+    .section-label h2 {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .section-label .pill {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .pill-global  { background: #1c2b3a; color: var(--accent); border: 1px solid #1f4070; }
+    .pill-africa  { background: #2a1d10; color: var(--africa); border: 1px solid var(--africa-dim); }
+    .pill-snap    { background: #1a2a1a; color: var(--green);  border: 1px solid #1e4020; }
 
-  /* CELL CONTENT */
-  .rank { font-size: 11px; color: var(--text3); font-weight: 600; }
-  .co-name { font-weight: 700; font-size: 13px; color: var(--text); }
-  .co-sector { font-size: 11px; color: var(--text2); margin-top: 2px; }
-  .co-mcap { font-size: 11px; color: var(--text3); margin-top: 3px; }
-  .price-val { font-weight: 600; font-size: 13px; }
-  .exch { font-size: 10px; color: var(--text3); margin-top: 2px; }
-  .prev { font-size: 12px; color: var(--text2); }
-  .pos { color: var(--pos); font-weight: 700; font-size: 12px; }
-  .neg { color: var(--neg); font-weight: 700; font-size: 12px; }
-  .neu { color: var(--neu); font-size: 12px; }
-  .news-txt { font-size: 12px; color: var(--text2); line-height: 1.6; }
-  .brvm-pill { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; background: var(--brvm-bg); color: var(--brvm-text); margin-top: 4px; }
+    /* ── Overview Cards ──────────────────────────────────── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+    .ov-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .ov-card .ov-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .ov-card .ov-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .ov-card .ov-sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .ov-card .ov-delta {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    .delta-pos { color: var(--green); }
+    .delta-neg { color: var(--red); }
+    .delta-neu { color: var(--muted); }
+    .accent-global { border-top: 3px solid var(--accent); }
+    .accent-africa { border-top: 3px solid var(--africa); }
 
-  /* SNAPSHOT */
-  .snap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-  .snap-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 15px; }
-  .snap-card-title { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 11px; }
-  .snap-row { display: flex; align-items: baseline; gap: 8px; padding: 6px 0; border-bottom: 0.5px solid var(--border); }
-  .snap-row:last-child { border-bottom: none; }
-  .snap-n { font-size: 10px; color: var(--text3); min-width: 14px; font-weight: 600; }
-  .snap-co { font-size: 12px; font-weight: 600; color: var(--text); flex: 1; }
-  .snap-val { font-size: 11px; color: var(--text2); white-space: nowrap; }
+    /* ── Tables ──────────────────────────────────────────── */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+    thead th {
+      background: var(--surface2);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    thead th.right { text-align: right; }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    td {
+      padding: 10px 14px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    td.right { text-align: right; }
+    td.muted  { color: var(--muted); font-size: 0.75rem; }
 
-  /* FOOTER */
-  .footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 0.5px solid var(--border); font-size: 11px; color: var(--text3); line-height: 1.8; text-align: center; }
-  .footer strong { color: var(--text2); }
+    .rank {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      min-width: 28px;
+    }
+    .company-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .badge-jse   { background: #12261a; color: #3fb950; border: 1px solid #1e4020; }
+    .badge-cse   { background: #2a1d10; color: var(--africa); border: 1px solid var(--africa-dim); }
+    .badge-other { background: #1c2330; color: var(--accent); border: 1px solid #1f4070; }
 
-  /* LOADING / ERROR */
-  .status { text-align: center; padding: 3rem 1rem; color: var(--text3); font-size: 13px; }
-  .status .icon { font-size: 32px; margin-bottom: 8px; }
+    .value-positive { color: var(--green); font-weight: 600; }
+    .value-negative { color: var(--red);   font-weight: 600; }
+    .value-neutral  { color: var(--text);  font-weight: 600; }
 
-  /* MOBILE */
-  @media (max-width: 540px) {
-    .page { padding: 1rem 0.75rem 3rem; }
-    table { font-size: 12px; }
-    thead th { padding: 6px 8px; font-size: 9px; }
-    tbody td { padding: 9px 8px; }
-    .co-name { font-size: 12px; }
-    .news-txt { font-size: 11px; }
-    .snap-grid { grid-template-columns: 1fr; }
-  }
-</style>
+    .africa-flag { font-size: 0.7rem; color: var(--africa); margin-right: 4px; }
+
+    /* ── Source note ─────────────────────────────────────── */
+    .source-note {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: -16px;
+      margin-bottom: 28px;
+      padding-left: 2px;
+    }
+    .source-note a { color: var(--muted); text-decoration: underline; }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 32px 20px 0;
+      font-size: 0.68rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="header">
-    <div>
-      <h1>📈 Weekly Markets</h1>
-      <p>Global & African top companies · BRVM priority</p>
-    </div>
-    <div class="week-pill" id="week-label">Loading…</div>
+<header>
+  <h1>Weekly <span>Markets</span> Dashboard</h1>
+  <span id="week-label"></span>
+</header>
+
+<main class="page">
+
+  <!-- ─── OVERVIEW ─────────────────────────────────────── -->
+  <div class="section-label">
+    <h2>Overview</h2>
+    <span class="pill pill-global">Global</span>
+    <span class="pill pill-africa">Africa</span>
   </div>
+  <div class="overview-grid" id="overview-grid"></div>
 
-  <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('global',this)">🌍 Global Top 5</div>
-    <div class="tab" onclick="switchTab('africa',this)">🌱 Africa · BRVM</div>
-    <div class="tab" onclick="switchTab('snap',this)">⚡ Snapshot</div>
+  <!-- ─── GLOBAL TOP 5 ─────────────────────────────────── -->
+  <div class="section-label">
+    <h2>Global Top 5</h2>
+    <span class="pill pill-global">by Market Cap</span>
   </div>
-
-  <div class="tab-content active" id="tab-global">
-    <p class="slabel" id="global-label"></p>
-    <div class="card" id="global-table-wrap"><div class="status"><div class="icon">⏳</div>Loading data…</div></div>
+  <div class="table-wrap">
+    <table id="global-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Country</th>
+          <th>Exchange</th>
+          <th>Sector</th>
+          <th class="right">Mcap (USD bn)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
+  <p class="source-note">Source: CompaniesMarketCap, May 2025</p>
 
-  <div class="tab-content" id="tab-africa">
-    <p class="slabel" id="africa-label"></p>
-    <div class="card" id="africa-table-wrap"><div class="status"><div class="icon">⏳</div>Loading data…</div></div>
+  <!-- ─── AFRICA TOP 10 — MCAP ─────────────────────────── -->
+  <div class="section-label">
+    <h2>Africa Top 10</h2>
+    <span class="pill pill-africa">by Market Capitalisation</span>
   </div>
-
-  <div class="tab-content" id="tab-snap">
-    <p class="slabel">Snapshot — Global comparative rankings</p>
-    <div id="snap-wrap"><div class="status"><div class="icon">⏳</div>Loading data…</div></div>
+  <div class="table-wrap">
+    <table id="africa-mcap-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Country</th>
+          <th>Exchange</th>
+          <th>Sector</th>
+          <th class="right">Mcap (USD bn)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
+  <p class="source-note">Source: African Business Top 250 (March 2025) / Shore Africa (May 2025)</p>
 
-  <div class="footer" id="footer-txt"></div>
+  <!-- ─── AFRICA TOP 10 — REVENUE ──────────────────────── -->
+  <div class="section-label">
+    <h2>Africa Top 10</h2>
+    <span class="pill pill-africa">by Revenue</span>
+  </div>
+  <div class="table-wrap">
+    <table id="africa-rev-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Country</th>
+          <th>Exchange</th>
+          <th>Sector</th>
+          <th class="right">Revenue (USD bn)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="source-note">Source: Company annual reports FY2024 / African Business Top 250 (2025)</p>
 
-</div>
+  <!-- ─── AFRICA TOP 10 — NET INCOME ───────────────────── -->
+  <div class="section-label">
+    <h2>Africa Top 10</h2>
+    <span class="pill pill-africa">by Net Income</span>
+  </div>
+  <div class="table-wrap">
+    <table id="africa-ni-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Company</th>
+          <th>Country</th>
+          <th>Exchange</th>
+          <th>Sector</th>
+          <th class="right">Net Income (USD bn)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="source-note">Source: African Business Top 250 (2025) / AfricanExponent analysis (Dec 2025)</p>
 
-<script src="data.js"></script>
+  <!-- ─── GLOBAL SNAPSHOT ───────────────────────────────── -->
+  <div class="section-label">
+    <h2>Global Comparative Snapshot</h2>
+    <span class="pill pill-snap">Top 5 Worldwide</span>
+  </div>
+  <div class="table-wrap">
+    <table id="snap-table">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th class="right">Mcap (USD bn)</th>
+          <th class="right">Revenue (USD bn)</th>
+          <th class="right">Net Income (USD bn)</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="source-note">Source: Company annual reports FY2024</p>
+
+</main>
+
+<footer>
+  <p>Data updated weekly. Figures are estimates converted to USD. Not investment advice.</p>
+  <p style="margin-top:6px;" id="footer-week"></p>
+</footer>
+
 <script>
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
+// ── Helper: delta badge ──────────────────────────────────────
+function deltaBadge(current, previous) {
+  if (previous == null || previous === 0) return '';
+  const diff = current - previous;
+  const pct  = ((diff / previous) * 100).toFixed(1);
+  if (diff > 0) return `<span class="ov-delta delta-pos">▲ ${Math.abs(diff).toLocaleString()} (+${pct}%)</span>`;
+  if (diff < 0) return `<span class="ov-delta delta-neg">▼ ${Math.abs(diff).toLocaleString()} (${pct}%)</span>`;
+  return `<span class="ov-delta delta-neu">— unchanged</span>`;
 }
 
-function varClass(v) {
-  if (!v) return 'neu';
-  const s = v.trim();
-  if (s.startsWith('+')) return 'pos';
-  if (s.startsWith('−') || s.startsWith('-')) return 'neg';
-  return 'neu';
+function deltaBadgeBn(current, previous) {
+  if (previous == null || previous === 0) return '';
+  const diff = current - previous;
+  const pct  = ((diff / previous) * 100).toFixed(1);
+  if (diff > 0) return `<span class="ov-delta delta-pos">▲ $${Math.abs(diff).toFixed(0)}bn (+${pct}%)</span>`;
+  if (diff < 0) return `<span class="ov-delta delta-neg">▼ $${Math.abs(diff).toFixed(0)}bn (${pct}%)</span>`;
+  return `<span class="ov-delta delta-neu">— unchanged</span>`;
 }
 
-function buildGlobalTable(rows) {
-  return `<table>
-    <thead><tr>
-      <th>#</th><th>Company</th><th>Price</th><th>Prev. week</th><th>Change</th><th>Recent development</th>
-    </tr></thead>
-    <tbody>${rows.map((r,i) => `<tr>
-      <td><span class="rank">${i+1}</span></td>
-      <td>
-        <div class="co-name">${r.name}</div>
-        <div class="co-sector">${r.sector}</div>
-        <div class="co-mcap">${r.mcap}</div>
-      </td>
-      <td><div class="price-val">${r.price}</div><div class="exch">${r.currency} · ${r.exchange}</div></td>
-      <td><div class="prev">${r.prev_price}</div></td>
-      <td><span class="${varClass(r.variation)}">${r.variation}</span></td>
-      <td><div class="news-txt">${r.news}</div></td>
-    </tr>`).join('')}</tbody>
-  </table>`;
+// ── Helper: exchange badge ───────────────────────────────────
+function exchBadge(ex) {
+  if (!ex) return '';
+  const primary = ex.split('/')[0].trim();
+  let cls = 'badge-other';
+  if (primary === 'JSE')    cls = 'badge-jse';
+  if (primary === 'CSE')    cls = 'badge-cse';
+  return `<span class="badge ${cls}">${primary}</span>`;
 }
 
-function buildAfricaTable(rows) {
-  return `<table>
-    <thead><tr>
-      <th>#</th><th>Company</th><th>Price</th><th>Prev. week</th><th>Change</th><th>Recent development</th>
-    </tr></thead>
-    <tbody>${rows.map((r,i) => `<tr>
-      <td><span class="rank">${i+1}</span></td>
-      <td>
-        <div class="co-name">${r.name} <span style="font-size:10px;color:var(--text3)">${r.ticker || ''}</span></div>
-        <div class="co-sector">${r.sector}</div>
-        ${r.exchange === 'BRVM' ? '<div><span class="brvm-pill">BRVM</span></div>' : ''}
-      </td>
-      <td><div class="price-val">${r.price}</div><div class="exch">${r.currency} · ${r.exchange}</div></td>
-      <td><div class="prev">${r.prev_price}</div></td>
-      <td><span class="${varClass(r.variation)}">${r.variation}</span></td>
-      <td><div class="news-txt">${r.news}</div></td>
-    </tr>`).join('')}</tbody>
-  </table>`;
-}
+// ── Render overview ──────────────────────────────────────────
+function renderOverview() {
+  const g = OVERVIEW.global;
+  const a = OVERVIEW.africa;
+  const afPct = ((a.listed / g.listed) * 100).toFixed(1);
 
-function buildSnapshot(snap) {
-  const sections = [
-    { key: 'by_market_cap', label: 'By market cap' },
-    { key: 'by_revenue',    label: 'By revenue (FY latest)' },
-    { key: 'by_net_income', label: 'By net income (FY latest)' }
+  const cards = [
+    {
+      label: '🌍 Listed Companies — World',
+      value: g.listed.toLocaleString(),
+      sub: `as of end-2024`,
+      delta: deltaBadge(g.listed, g.prev_listed),
+      cls: 'accent-global'
+    },
+    {
+      label: '🌍 Total Global Market Cap',
+      value: '$125 tn',
+      sub: 'OECD Corporate Governance Factbook 2025',
+      delta: '',
+      cls: 'accent-global'
+    },
+    {
+      label: '🌍 Listed Companies — Africa',
+      value: a.listed.toLocaleString(),
+      sub: `${afPct}% of global listings`,
+      delta: deltaBadge(a.listed, a.prev_listed),
+      cls: 'accent-africa'
+    },
+    {
+      label: '🌍 Africa Total Market Cap',
+      value: `$${a.mcap_bn}bn`,
+      sub: '~⅓ of Africa\'s GDP (Top 250, Mar 2025)',
+      delta: deltaBadgeBn(a.mcap_bn, a.prev_mcap_bn),
+      cls: 'accent-africa'
+    }
   ];
-  return `<div class="snap-grid">${sections.map(s => `
-    <div class="snap-card">
-      <div class="snap-card-title">${s.label}</div>
-      ${(snap[s.key] || []).map((it, i) => `
-        <div class="snap-row">
-          <span class="snap-n">${i+1}</span>
-          <span class="snap-co">${it.name}</span>
-          <span class="snap-val">${it.value}</span>
-        </div>`).join('')}
-    </div>`).join('')}
-  </div>`;
+
+  const grid = document.getElementById('overview-grid');
+  grid.innerHTML = cards.map(c => `
+    <div class="ov-card ${c.cls}">
+      <div class="ov-label">${c.label}</div>
+      <div class="ov-value">${c.value}</div>
+      <div class="ov-sub">${c.sub}</div>
+      ${c.delta}
+    </div>
+  `).join('');
 }
 
-function render() {
-  if (typeof MARKETS_DATA === 'undefined') {
-    document.getElementById('global-table-wrap').innerHTML = '<div class="status"><div class="icon">⚠️</div>data.js not found. Please upload it to your repository.</div>';
-    return;
-  }
-  const d = MARKETS_DATA;
-  document.getElementById('week-label').textContent = 'Week of ' + d.week;
-  document.getElementById('global-label').textContent = 'Top 5 — Global market capitalisation · ' + d.data_date;
-  document.getElementById('africa-label').textContent = 'Top 5 — African market capitalisation · BRVM priority · ' + d.data_date;
-  document.getElementById('global-table-wrap').innerHTML  = buildGlobalTable(d.global);
-  document.getElementById('africa-table-wrap').innerHTML  = buildAfricaTable(d.africa);
-  document.getElementById('snap-wrap').innerHTML          = buildSnapshot(d.snapshot);
-  document.getElementById('footer-txt').innerHTML =
-    `Updated <strong>${d.week}</strong> · Sources: ${d.sources} · Refresh: ask Claude each Monday`;
+// ── Render Global Top 5 ──────────────────────────────────────
+function renderGlobal() {
+  const tbody = document.querySelector('#global-table tbody');
+  tbody.innerHTML = GLOBAL_TOP5.map(r => `
+    <tr>
+      <td class="rank">${r.rank}</td>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="muted">${r.country}</td>
+      <td class="muted">${r.exchange}</td>
+      <td class="muted">${r.sector}</td>
+      <td class="right value-neutral">$${r.mcap.toLocaleString()}</td>
+    </tr>
+  `).join('');
 }
 
-render();
+// ── Render Africa table (generic) ───────────────────────────
+function renderAfricaTable(tableId, data, valueKey, valueLabel) {
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = data.map(r => {
+    const val = r[valueKey];
+    const valClass = val < 0 ? 'value-negative' : 'value-neutral';
+    const valStr = val < 0
+      ? `($${Math.abs(val).toFixed(2)})`
+      : `$${val.toFixed(2)}`;
+    return `
+      <tr>
+        <td class="rank">${r.rank}</td>
+        <td><span class="company-name">${r.company}</span>${exchBadge(r.exchange)}</td>
+        <td class="muted">${r.country}</td>
+        <td class="muted">${r.exchange}</td>
+        <td class="muted">${r.sector}</td>
+        <td class="right ${valClass}">${valStr}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ── Render Global Snapshot ───────────────────────────────────
+function renderSnapshot() {
+  const tbody = document.querySelector('#snap-table tbody');
+  tbody.innerHTML = GLOBAL_SNAPSHOT.map(r => `
+    <tr>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="right value-neutral">$${r.mcap.toLocaleString()}</td>
+      <td class="right value-neutral">$${r.revenue.toLocaleString()}</td>
+      <td class="right value-positive">$${r.net_income.toLocaleString()}</td>
+    </tr>
+  `).join('');
+}
+
+// ── Init ─────────────────────────────────────────────────────
+document.getElementById('week-label').textContent = WEEK_LABEL;
+document.getElementById('footer-week').textContent = `Data reference: ${WEEK_LABEL}`;
+
+renderOverview();
+renderGlobal();
+renderAfricaTable('africa-mcap-table', AFRICA_TOP10_MCAP,      'mcap',       'Mcap');
+renderAfricaTable('africa-rev-table',  AFRICA_TOP10_REVENUE,    'revenue',    'Revenue');
+renderAfricaTable('africa-ni-table',   AFRICA_TOP10_NETINCOME,  'net_income', 'Net Income');
+renderSnapshot();
 </script>
 </body>
-</html>
+</html>//
