@@ -158,26 +158,67 @@ BRVM_TOP5_VOLUME_STATIC = [
 ]
 
 
-def get_usd_zar_rate():
-    """Return current ZAR per 1 USD."""
-    try:
-        fx = yf.Ticker("ZAR=X")
-        rate = fx.fast_info.get("last_price")
-        if rate:
-            return float(rate)
-    except Exception:
-        pass
-    # fallback: try history
-    try:
-        hist = yf.Ticker("ZAR=X").history(period="5d")
-        return float(hist["Close"].iloc[-1])
-    except Exception as e:
-        print(f"WARNING: could not fetch USD/ZAR rate, defaulting to 18.5 ({e})", file=sys.stderr)
-        return 18.5
+_FX_CACHE = {}
 
 
-def get_market_cap_usd(ticker, zar_rate):
-    """Return market cap in USD billions for a ticker, handling ZAR-denominated JSE stocks."""
+def get_fx_multiplier_to_usd(currency):
+    """
+    Return the multiplier to convert 1 unit of `currency` into USD.
+    Handles both standard 3-letter codes (ZAR, SAR, EUR...) and Yahoo Finance's
+    'minor unit' quoting quirks for some exchanges (e.g. ZAc = SA cents,
+    GBp = pence) by detecting a lowercase trailing letter and dividing by 100.
+    """
+    if not currency or currency.upper() == "USD":
+        return 1.0
+
+    is_minor_unit = currency[-1].islower() and len(currency) >= 3
+    code = currency[:-1].upper() + currency[-1].upper() if False else currency.upper()
+    # Normalise to the 3-letter ISO code regardless of minor-unit suffix casing
+    code = code[:3]
+
+    if code in _FX_CACHE:
+        rate = _FX_CACHE[code]
+    else:
+        rate = None
+        try:
+            fx = yf.Ticker(f"{code}=X")
+            rate = fx.fast_info.get("last_price")
+            if not rate:
+                hist = fx.history(period="5d")
+                rate = float(hist["Close"].iloc[-1])
+        except Exception as e:
+            print(f"WARNING: FX fetch failed for {code}: {e}", file=sys.stderr)
+        _FX_CACHE[code] = rate
+
+    if not rate:
+        return None
+
+    multiplier = 1.0 / float(rate)
+    if is_minor_unit:
+        multiplier /= 100.0
+    return multiplier
+
+
+# Fallback currency inference from ticker suffix, used only when the API
+# doesn't return a currency field at all (observed to happen intermittently
+# for some exchanges, e.g. Saudi Tadawul, JSE).
+SUFFIX_CURRENCY_FALLBACK = {
+    ".JO": "ZAR",
+    ".SR": "SAR",
+    ".NGX": "NGN",
+    ".NR": "KES",
+}
+
+
+def infer_currency_from_suffix(ticker):
+    for suffix, currency in SUFFIX_CURRENCY_FALLBACK.items():
+        if ticker.endswith(suffix):
+            return currency
+    return None
+
+
+def get_market_cap_usd(ticker, zar_rate=None):
+    """Return market cap in USD billions for a ticker, converting any non-USD currency."""
     t = yf.Ticker(ticker)
     mcap = None
     currency = None
@@ -200,14 +241,32 @@ def get_market_cap_usd(ticker, zar_rate):
         print(f"ERROR: no market cap for {ticker}, skipping", file=sys.stderr)
         return None
 
-    mcap_bn = mcap / 1e9
-    if currency == "ZAR":
-        mcap_bn = mcap_bn / zar_rate
+    mcap_bn_raw = mcap / 1e9
+
+    if not currency:
+        currency = infer_currency_from_suffix(ticker)
+        if currency:
+            print(f"INFO {ticker}: currency missing from API, inferred '{currency}' from ticker suffix", file=sys.stderr)
+
+    print(f"DEBUG {ticker}: raw_mcap_bn={mcap_bn_raw:.2f} currency={currency}", file=sys.stderr)
+
+    if currency and currency.upper() != "USD":
+        mult = get_fx_multiplier_to_usd(currency)
+        if mult is None:
+            print(f"WARNING: could not convert currency '{currency}' for {ticker}, skipping", file=sys.stderr)
+            return None
+        mcap_bn = mcap_bn_raw * mult
+    else:
+        mcap_bn = mcap_bn_raw
+
+    if mcap_bn <= 0 or mcap_bn > 20000:
+        print(f"WARNING: implausible market cap for {ticker} (${mcap_bn:.0f}bn) — likely a currency/unit bug, skipping", file=sys.stderr)
+        return None
 
     return round(mcap_bn, 2)
 
 
-def build_ranked_list(candidates, top_n, zar_rate):
+def build_ranked_list(candidates, top_n, zar_rate=None):
     rows = []
     for ticker in candidates:
         mcap_bn = get_market_cap_usd(ticker, zar_rate)
@@ -309,8 +368,7 @@ def main():
     today = datetime.date.today()
     week_label = f"Week of {today.strftime('%-d %B %Y')}"
 
-    zar_rate = get_usd_zar_rate()
-    print(f"USD/ZAR rate: {zar_rate}")
+    zar_rate = None  # kept for backward-compat signature; FX now auto-detected per ticker
 
     global_rows = build_ranked_list(GLOBAL_CANDIDATES, GLOBAL_TOP_N, zar_rate)
     africa_rows = build_ranked_list(AFRICA_CANDIDATES, AFRICA_TOP_N, zar_rate)
