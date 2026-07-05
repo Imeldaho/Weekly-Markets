@@ -1,0 +1,40 @@
+name: Weekly Markets Dashboard Refresh
+
+on:
+  schedule:
+    # Every Monday at 07:00 UTC (~08:00/09:00 Abidjan time, GMT)
+    - cron: "0 7 * * 1"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab to test
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install yfinance
+
+      - name: Run data refresh script
+        run: python scripts/update_data.py
+
+      - name: Commit and push if data.js changed
+        run: |
+          git config user.name "weekly-markets-bot"
+          git config user.email "actions@github.com"
+          git add data.js
+          if git diff --cached --quiet; then
+            echo "No changes to data.js — market caps unchanged or fetch failed silently upstream."
+          else
+            git commit -m "Auto-refresh: weekly market cap update ($(date -u +%Y-%m-%d))"
+            git push
+          fi
