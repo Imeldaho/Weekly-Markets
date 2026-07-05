@@ -55,16 +55,16 @@ const GLOBAL_TOP5 = [
 ];
 
 const AFRICA_TOP10_MCAP = [
-  { rank: 1, company: "AngloGold Ashanti", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 2, company: "Naspers", country: "🇿🇦 South Africa", sector: "Technology / Media", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 3, company: "Gold Fields", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 4, company: "FirstRand", country: "🇿🇦 South Africa", sector: "Banking", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 5, company: "Capitec Bank", country: "🇿🇦 South Africa", sector: "Banking", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 6, company: "Standard Bank Group", country: "🇿🇦 South Africa", sector: "Banking", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 7, company: "MTN Group", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 8, company: "Vodacom", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 9, company: "Impala Platinum", country: "🇿🇦 South Africa", sector: "Platinum Mining", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 10, company: "Discovery Limited", country: "🇿🇦 South Africa", sector: "Insurance", mcap: 0.00, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 1, company: "AngloGold Ashanti", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 43.34, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 2, company: "Naspers", country: "🇿🇦 South Africa", sector: "Technology / Media", mcap: 36.66, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 3, company: "Capitec Bank", country: "🇿🇦 South Africa", sector: "Banking", mcap: 34.09, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 4, company: "FirstRand", country: "🇿🇦 South Africa", sector: "Banking", mcap: 33.23, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 5, company: "Gold Fields", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 32.45, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 6, company: "Standard Bank Group", country: "🇿🇦 South Africa", sector: "Banking", mcap: 32.25, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 7, company: "MTN Group", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 26.37, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 8, company: "Vodacom", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 18.19, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 9, company: "Discovery Limited", country: "🇿🇦 South Africa", sector: "Insurance", mcap: 10.91, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 10, company: "Impala Platinum", country: "🇿🇦 South Africa", sector: "Platinum Mining", mcap: 10.18, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
 ];
 
 const AFRICA_TOP10_REVENUE = [
