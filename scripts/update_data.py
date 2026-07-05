@@ -160,43 +160,40 @@ BRVM_TOP5_VOLUME_STATIC = [
 
 _FX_CACHE = {}
 
+# Known currency codes → the FX pair to fetch. Yahoo Finance sometimes
+# quotes certain exchanges in "minor units" (e.g. SA cents instead of Rand)
+# and the exact code string it returns for that is inconsistent, so this
+# maps every variant we might see back to the major-unit FX pair. Whether
+# a /100 adjustment is ALSO needed is resolved separately by the
+# self-calibrating plausibility check below, not guessed from the string.
+FX_PAIR_FOR_CURRENCY = {
+    "USD": "USD",
+    "ZAR": "ZAR", "ZAC": "ZAR", "ZAc": "ZAR",
+    "SAR": "SAR", "SAC": "SAR", "SAc": "SAR",
+    "GBP": "GBP", "GBX": "GBP", "GBp": "GBP",
+    "EUR": "EUR",
+    "NGN": "NGN",
+    "KES": "KES",
+}
 
-def get_fx_multiplier_to_usd(currency):
-    """
-    Return the multiplier to convert 1 unit of `currency` into USD.
-    Handles both standard 3-letter codes (ZAR, SAR, EUR...) and Yahoo Finance's
-    'minor unit' quoting quirks for some exchanges (e.g. ZAc = SA cents,
-    GBp = pence) by detecting a lowercase trailing letter and dividing by 100.
-    """
-    if not currency or currency.upper() == "USD":
+
+def get_fx_rate(fx_pair):
+    """Return units of `fx_pair` per 1 USD (e.g. ZAR -> ~18.3)."""
+    if fx_pair == "USD":
         return 1.0
-
-    is_minor_unit = currency[-1].islower() and len(currency) >= 3
-    code = currency[:-1].upper() + currency[-1].upper() if False else currency.upper()
-    # Normalise to the 3-letter ISO code regardless of minor-unit suffix casing
-    code = code[:3]
-
-    if code in _FX_CACHE:
-        rate = _FX_CACHE[code]
-    else:
-        rate = None
-        try:
-            fx = yf.Ticker(f"{code}=X")
-            rate = fx.fast_info.get("last_price")
-            if not rate:
-                hist = fx.history(period="5d")
-                rate = float(hist["Close"].iloc[-1])
-        except Exception as e:
-            print(f"WARNING: FX fetch failed for {code}: {e}", file=sys.stderr)
-        _FX_CACHE[code] = rate
-
-    if not rate:
-        return None
-
-    multiplier = 1.0 / float(rate)
-    if is_minor_unit:
-        multiplier /= 100.0
-    return multiplier
+    if fx_pair in _FX_CACHE:
+        return _FX_CACHE[fx_pair]
+    rate = None
+    try:
+        fx = yf.Ticker(f"{fx_pair}=X")
+        rate = fx.fast_info.get("last_price")
+        if not rate:
+            hist = fx.history(period="5d")
+            rate = float(hist["Close"].iloc[-1])
+    except Exception as e:
+        print(f"WARNING: FX fetch failed for {fx_pair}: {e}", file=sys.stderr)
+    _FX_CACHE[fx_pair] = rate
+    return rate
 
 
 # Fallback currency inference from ticker suffix, used only when the API
@@ -215,6 +212,13 @@ def infer_currency_from_suffix(ticker):
         if ticker.endswith(suffix):
             return currency
     return None
+
+
+# Plausible range for a single listed company's market cap, in USD billions.
+# Used to self-calibrate away from Yahoo Finance's inconsistent minor-unit
+# (cents) quoting on certain exchanges, instead of guessing from the
+# currency string.
+PLAUSIBLE_MCAP_BN = (0.05, 20000)
 
 
 def get_market_cap_usd(ticker, zar_rate=None):
@@ -248,22 +252,30 @@ def get_market_cap_usd(ticker, zar_rate=None):
         if currency:
             print(f"INFO {ticker}: currency missing from API, inferred '{currency}' from ticker suffix", file=sys.stderr)
 
-    print(f"DEBUG {ticker}: raw_mcap_bn={mcap_bn_raw:.2f} currency={currency}", file=sys.stderr)
+    print(f"DEBUG {ticker}: raw_mcap_bn={mcap_bn_raw:.4f} currency={currency}", file=sys.stderr)
 
-    if currency and currency.upper() != "USD":
-        mult = get_fx_multiplier_to_usd(currency)
-        if mult is None:
-            print(f"WARNING: could not convert currency '{currency}' for {ticker}, skipping", file=sys.stderr)
-            return None
-        mcap_bn = mcap_bn_raw * mult
+    if not currency or currency.upper() == "USD" or currency == "USD":
+        candidate = mcap_bn_raw
     else:
-        mcap_bn = mcap_bn_raw
+        fx_pair = FX_PAIR_FOR_CURRENCY.get(currency, currency.upper()[:3])
+        rate = get_fx_rate(fx_pair)
+        if not rate:
+            print(f"WARNING: no FX rate for '{currency}' -> {fx_pair} ({ticker}), skipping", file=sys.stderr)
+            return None
+        candidate = mcap_bn_raw / rate
 
-    if mcap_bn <= 0 or mcap_bn > 20000:
-        print(f"WARNING: implausible market cap for {ticker} (${mcap_bn:.0f}bn) — likely a currency/unit bug, skipping", file=sys.stderr)
-        return None
+    # Self-calibrate for possible minor-unit (cents) quoting: try the direct
+    # conversion first, then /100 and *100, and keep whichever value actually
+    # falls in a plausible market-cap range instead of assuming a format.
+    for factor, label in ((1, "direct"), (0.01, "/100"), (100, "x100")):
+        value = candidate * factor
+        if PLAUSIBLE_MCAP_BN[0] <= value <= PLAUSIBLE_MCAP_BN[1]:
+            if factor != 1:
+                print(f"INFO {ticker}: applied {label} correction to reach a plausible market cap (${value:.2f}bn)", file=sys.stderr)
+            return round(value, 2)
 
-    return round(mcap_bn, 2)
+    print(f"WARNING: no plausible market cap for {ticker} after conversion (raw candidate ${candidate:.2f}bn) — skipping", file=sys.stderr)
+    return None
 
 
 def build_ranked_list(candidates, top_n, zar_rate=None):
