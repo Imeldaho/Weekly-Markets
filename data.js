@@ -3,7 +3,8 @@
 // Updated: 2026-07-05 (Week of 5 July 2026)
 // Sources: CompaniesMarketCap.com (live), African Business Top 250 (May 2026),
 //          Accra Street Journal Africa profitability report (May 2026),
-//          Company FY2025 annual reports / SEC filings (Global Snapshot)
+//          Company FY2025 annual reports / SEC filings (Global Snapshot),
+//          BRVM / RichBourse — session de cotation du vendredi 3 juillet 2026
 // ============================================================
 
 const WEEK_LABEL = "Week of 5 July 2026";
@@ -20,6 +21,41 @@ const OVERVIEW = {
     note:      "Source: African Business Top 250, May 2026 (+34% YoY, from $595bn to $795bn)"
   }
 };
+
+// ── BRVM Snapshot — session du vendredi 3 juillet 2026 ──────
+const BRVM_SESSION_DATE = "Séance du vendredi 3 juillet 2026";
+
+const BRVM_TOP5_MCAP = [
+  { rank: 1, company: "Sonatel",              ticker: "SNTS", mcap_bn: 2950.00 },
+  { rank: 2, company: "Orange Côte d'Ivoire", ticker: "ORAC", mcap_bn: 2546.08 },
+  { rank: 3, company: "SGCI",                 ticker: "SGBC", mcap_bn: 1151.11 },
+  { rank: 4, company: "Ecobank CI",           ticker: "ECOC", mcap_bn: 950.72 },
+  { rank: 5, company: "SIB",                  ticker: "SIBC", mcap_bn: 886.00 }
+];
+
+const BRVM_TOP5_GAINERS = [
+  { rank: 1, company: "BIIC",                     ticker: "BICB", variation_pct: 5.37, price: 6275 },
+  { rank: 2, company: "Ecobank CI",               ticker: "ECOC", variation_pct: 4.67, price: 17270 },
+  { rank: 3, company: "Sucrivoire",                ticker: "SCRC", variation_pct: 3.14, price: 3610 },
+  { rank: 4, company: "Sicor",                     ticker: "SICC", variation_pct: 2.97, price: 5200 },
+  { rank: 5, company: "Ecobank Transnational",     ticker: "ETIT", variation_pct: 2.17, price: 47 }
+];
+
+const BRVM_TOP5_LOSERS = [
+  { rank: 1, company: "Unilever CI",              ticker: "UNLC", variation_pct: -7.49, price: 51395 },
+  { rank: 2, company: "SGCI",                     ticker: "SGBC", variation_pct: -5.10, price: 37000 },
+  { rank: 3, company: "SAPH",                     ticker: "SPHC", variation_pct: -3.58, price: 7675 },
+  { rank: 4, company: "Air Liquide - Eryum",      ticker: "SIVC", variation_pct: -3.09, price: 2355 },
+  { rank: 5, company: "Servair",                  ticker: "ABJC", variation_pct: -2.59, price: 3200 }
+];
+
+const BRVM_TOP5_VOLUME = [
+  { rank: 1, company: "Ecobank Transnational", ticker: "ETIT", volume: 3915461 },
+  { rank: 2, company: "Uniwax",                ticker: "UNXC", volume: 111753 },
+  { rank: 3, company: "BOA Niger",             ticker: "BOAN", volume: 18123 },
+  { rank: 4, company: "Bolloré - AGL",         ticker: "SDSC", volume: 16554 },
+  { rank: 5, company: "BOA Bénin",             ticker: "BOAB", volume: 8139 }
+];
 
 const GLOBAL_TOP5 = [
   { rank: 1, company: "NVIDIA",    ticker: "NVDA",  country: "🇺🇸 USA", sector: "Semiconductors",     mcap: 5110, note: "First company ever to reach $5T market cap; AI GPU dominance continues" },
