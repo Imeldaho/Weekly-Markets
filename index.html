@@ -22,6 +22,8 @@
   --gold: #d29922;
   --africa: #f0883e;
   --africa-dim:#7c4c24;
+  --brvm: #d29922;
+  --brvm-dim: #6b4e0f;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-size: 14px;
 }
@@ -88,6 +90,7 @@ header h1 span { color: var(--accent); }
 .pill-global { background: #1c2b3a; color: var(--accent); border: 1px solid #1f4070; }
 .pill-africa { background: #2a1d10; color: var(--africa); border: 1px solid var(--africa-dim); }
 .pill-snap { background: #1a2a1a; color: var(--green); border: 1px solid #1e4020; }
+.pill-brvm { background: #2a220f; color: var(--brvm); border: 1px solid var(--brvm-dim); }
 
 /* ── Overview Cards ──────────────────────────────────── */
 .overview-grid {
@@ -131,6 +134,31 @@ header h1 span { color: var(--accent); }
 .delta-neu { color: var(--muted); }
 .accent-global { border-top: 3px solid var(--accent); }
 .accent-africa { border-top: 3px solid var(--africa); }
+
+/* ── BRVM Snapshot grid ───────────────────────────────── */
+.brvm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.brvm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.brvm-card h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.brvm-card table { font-size: 0.76rem; }
+.brvm-card th, .brvm-card td { padding: 6px 10px; }
 
 /* ── Tables ──────────────────────────────────────────── */
 .table-wrap {
@@ -234,6 +262,44 @@ footer {
     <span class="pill pill-africa">Africa</span>
   </div>
   <div class="overview-grid" id="overview-grid"></div>
+
+  <!-- ─── BRVM SNAPSHOT ────────────────────────────────── -->
+  <div class="section-label">
+    <h2>BRVM Snapshot</h2>
+    <span class="pill pill-brvm">UEMOA</span>
+    <span id="brvm-session-label" class="pill pill-snap"></span>
+  </div>
+  <div class="brvm-grid">
+    <div class="brvm-card">
+      <h3>Top 5 — Capitalisation</h3>
+      <table id="brvm-mcap-table">
+        <thead><tr><th>#</th><th>Société</th><th>Symb.</th><th class="right">Mrds FCFA</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="brvm-card">
+      <h3>Top 5 — Plus fortes hausses</h3>
+      <table id="brvm-gainers-table">
+        <thead><tr><th>#</th><th>Société</th><th>Symb.</th><th class="right">Var.</th><th class="right">Cours</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="brvm-card">
+      <h3>Top 5 — Plus fortes baisses</h3>
+      <table id="brvm-losers-table">
+        <thead><tr><th>#</th><th>Société</th><th>Symb.</th><th class="right">Var.</th><th class="right">Cours</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="brvm-card">
+      <h3>Top 5 — Valeurs les plus échangées</h3>
+      <table id="brvm-volume-table">
+        <thead><tr><th>#</th><th>Société</th><th>Symb.</th><th class="right">Titres</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="source-note">Source: BRVM / RichBourse — dernière séance de cotation</p>
 
   <!-- ─── GLOBAL TOP 5 ─────────────────────────────────── -->
   <div class="section-label">
@@ -428,6 +494,49 @@ function renderOverview() {
   `).join('');
 }
 
+// ── Render BRVM Snapshot ─────────────────────────────────────
+function renderBRVM() {
+  document.getElementById('brvm-session-label').textContent = BRVM_SESSION_DATE;
+
+  document.querySelector('#brvm-mcap-table tbody').innerHTML = BRVM_TOP5_MCAP.map(r => `
+    <tr>
+      <td class="rank">${r.rank}</td>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="muted">${r.ticker}</td>
+      <td class="right value-neutral">${r.mcap_bn.toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  document.querySelector('#brvm-gainers-table tbody').innerHTML = BRVM_TOP5_GAINERS.map(r => `
+    <tr>
+      <td class="rank">${r.rank}</td>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="muted">${r.ticker}</td>
+      <td class="right value-positive">▲ ${r.variation_pct.toFixed(2)}%</td>
+      <td class="right muted">${r.price.toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  document.querySelector('#brvm-losers-table tbody').innerHTML = BRVM_TOP5_LOSERS.map(r => `
+    <tr>
+      <td class="rank">${r.rank}</td>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="muted">${r.ticker}</td>
+      <td class="right value-negative">▼ ${Math.abs(r.variation_pct).toFixed(2)}%</td>
+      <td class="right muted">${r.price.toLocaleString()}</td>
+    </tr>
+  `).join('');
+
+  document.querySelector('#brvm-volume-table tbody').innerHTML = BRVM_TOP5_VOLUME.map(r => `
+    <tr>
+      <td class="rank">${r.rank}</td>
+      <td><span class="company-name">${r.company}</span></td>
+      <td class="muted">${r.ticker}</td>
+      <td class="right value-neutral">${r.volume.toLocaleString()}</td>
+    </tr>
+  `).join('');
+}
+
 // ── Render Global Top 5 ──────────────────────────────────────
 function renderGlobal() {
   const tbody = document.querySelector('#global-table tbody');
@@ -483,6 +592,7 @@ document.getElementById('week-label').textContent = WEEK_LABEL;
 document.getElementById('footer-week').textContent = `Data reference: ${WEEK_LABEL}`;
 
 renderOverview();
+renderBRVM();
 renderGlobal();
 renderAfricaTable('africa-mcap-table', AFRICA_TOP10_MCAP,      'mcap',       'Mcap');
 renderAfricaTable('africa-rev-table',  AFRICA_TOP10_REVENUE,    'revenue',    'Revenue');
