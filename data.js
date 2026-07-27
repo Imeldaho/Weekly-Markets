@@ -1,11 +1,11 @@
 // ============================================================
 // WEEKLY MARKETS DASHBOARD — data.js
-// Auto-updated by GitHub Actions: 2026-07-20 (Week of 20 July 2026)
+// Auto-updated by GitHub Actions: 2026-07-27 (Week of 27 July 2026)
 // Live market cap: Yahoo Finance via yfinance. Revenue/net income: static annual figures
 // (see scripts/update_data.py — update those dictionaries when new annual reports are out).
 // ============================================================
 
-const WEEK_LABEL = "Week of 20 July 2026";
+const WEEK_LABEL = "Week of 27 July 2026";
 
 const OVERVIEW = {
   global: { listed: 44152, mcap_tn: 150.3, note: "Source: CompaniesMarketCap.com" },
@@ -47,24 +47,24 @@ const BRVM_TOP5_VOLUME = [
 ];
 
 const GLOBAL_TOP5 = [
-  { rank: 1, company: "NVIDIA", ticker: "NVDA", country: "🇺🇸 USA", sector: "Semiconductors", mcap: 4990, note: "Live market cap via yfinance, 2026-07-20" },
-  { rank: 2, company: "Apple", ticker: "AAPL", country: "🇺🇸 USA", sector: "Technology", mcap: 4882, note: "Live market cap via yfinance, 2026-07-20" },
-  { rank: 3, company: "Alphabet", ticker: "GOOGL", country: "🇺🇸 USA", sector: "Technology", mcap: 4284, note: "Live market cap via yfinance, 2026-07-20" },
-  { rank: 4, company: "Microsoft", ticker: "MSFT", country: "🇺🇸 USA", sector: "Technology", mcap: 2907, note: "Live market cap via yfinance, 2026-07-20" },
-  { rank: 5, company: "Amazon", ticker: "AMZN", country: "🇺🇸 USA", sector: "E-Commerce / Cloud", mcap: 2676, note: "Live market cap via yfinance, 2026-07-20" },
+  { rank: 1, company: "Apple", ticker: "AAPL", country: "🇺🇸 USA", sector: "Technology", mcap: 4953, note: "Live market cap via yfinance, 2026-07-27" },
+  { rank: 2, company: "NVIDIA", ticker: "NVDA", country: "🇺🇸 USA", sector: "Semiconductors", mcap: 4788, note: "Live market cap via yfinance, 2026-07-27" },
+  { rank: 3, company: "Alphabet", ticker: "GOOGL", country: "🇺🇸 USA", sector: "Technology", mcap: 4017, note: "Live market cap via yfinance, 2026-07-27" },
+  { rank: 4, company: "Microsoft", ticker: "MSFT", country: "🇺🇸 USA", sector: "Technology", mcap: 2901, note: "Live market cap via yfinance, 2026-07-27" },
+  { rank: 5, company: "Amazon", ticker: "AMZN", country: "🇺🇸 USA", sector: "E-Commerce / Cloud", mcap: 2495, note: "Live market cap via yfinance, 2026-07-27" },
 ];
 
 const AFRICA_TOP10_MCAP = [
-  { rank: 1, company: "AngloGold Ashanti", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 38.13, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 2, company: "Capitec Bank", country: "🇿🇦 South Africa", sector: "Banking", mcap: 33.12, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 3, company: "FirstRand", country: "🇿🇦 South Africa", sector: "Banking", mcap: 32.89, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 4, company: "Standard Bank Group", country: "🇿🇦 South Africa", sector: "Banking", mcap: 31.60, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 5, company: "Gold Fields", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 28.02, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 6, company: "MTN Group", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 25.16, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 7, company: "Vodacom", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 17.95, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 8, company: "Discovery Limited", country: "🇿🇦 South Africa", sector: "Insurance", mcap: 10.20, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 9, company: "Impala Platinum", country: "🇿🇦 South Africa", sector: "Platinum Mining", mcap: 9.50, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
-  { rank: 10, company: "Sasol", country: "🇿🇦 South Africa", sector: "Chemicals / Energy", mcap: 7.42, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 1, company: "AngloGold Ashanti", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 40.57, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 2, company: "Naspers", country: "🇿🇦 South Africa", sector: "Technology / Media", mcap: 36.52, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 3, company: "FirstRand", country: "🇿🇦 South Africa", sector: "Banking", mcap: 32.13, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 4, company: "Capitec Bank", country: "🇿🇦 South Africa", sector: "Banking", mcap: 32.03, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 5, company: "Standard Bank Group", country: "🇿🇦 South Africa", sector: "Banking", mcap: 31.41, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 6, company: "Gold Fields", country: "🇿🇦 South Africa", sector: "Gold Mining", mcap: 29.21, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 7, company: "MTN Group", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 25.65, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 8, company: "Vodacom", country: "🇿🇦 South Africa", sector: "Telecommunications", mcap: 18.17, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 9, company: "Discovery Limited", country: "🇿🇦 South Africa", sector: "Insurance", mcap: 10.32, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
+  { rank: 10, company: "Impala Platinum", country: "🇿🇦 South Africa", sector: "Platinum Mining", mcap: 9.39, exchange: "JSE", note: "Live JSE market cap, converted to USD" },
 ];
 
 const AFRICA_TOP10_REVENUE = [
@@ -94,9 +94,9 @@ const AFRICA_TOP10_NETINCOME = [
 ];
 
 const GLOBAL_SNAPSHOT = [
-  { rank: 1, company: "NVIDIA", mcap: 4990, revenue: 215.9, net_income: 120.1 },
-  { rank: 2, company: "Apple", mcap: 4882, revenue: 416.2, net_income: 112.0 },
-  { rank: 3, company: "Alphabet", mcap: 4284, revenue: 402.8, net_income: 132.2 },
-  { rank: 4, company: "Microsoft", mcap: 2907, revenue: 281.7, net_income: 101.8 },
-  { rank: 5, company: "Amazon", mcap: 2676, revenue: 716.9, net_income: 77.7 },
+  { rank: 1, company: "Apple", mcap: 4953, revenue: 416.2, net_income: 112.0 },
+  { rank: 2, company: "NVIDIA", mcap: 4788, revenue: 215.9, net_income: 120.1 },
+  { rank: 3, company: "Alphabet", mcap: 4017, revenue: 402.8, net_income: 132.2 },
+  { rank: 4, company: "Microsoft", mcap: 2901, revenue: 281.7, net_income: 101.8 },
+  { rank: 5, company: "Amazon", mcap: 2495, revenue: 716.9, net_income: 77.7 },
 ];
